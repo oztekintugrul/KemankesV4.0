@@ -10,7 +10,7 @@ const App = { ...Logic, ...Storage, ...Weather, ...UI };
 Object.assign(window, App);
 
 window.addEventListener('DOMContentLoaded', () => {
-    console.log("🏹 Kemankeş Defteri (V13.5) Başlatıldı.");
+    console.log("🏹 Kemankeş Defteri (v4.0) Başlatıldı.");
 
     // Tema Kontrolü
     const savedTheme = localStorage.getItem('kemankesTheme');

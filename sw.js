@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kemankes-v5'; // Versiyon kontrolü
+const CACHE_NAME = 'kemankes-v6'; // Versiyon kontrolü
 const ASSETS = [
   './',
   './index.html',
