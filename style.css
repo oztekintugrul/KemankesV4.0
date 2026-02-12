@@ -1,0 +1,324 @@
+/* style.css - KEMANKEŞ DEFTERİ V3.2 */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+/* 1. TEMEL DEĞİŞKENLER */
+:root {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --score-color: #ffffff;
+    --card-bg: #1e1e1e;
+    --sidebar-bg: #1a1a1a;
+    --border-color: #333;
+    --button-bg: #333;
+    --button-text: #fff;
+    --input-bg: #2c2c2c;
+    --input-text: #d4af37;
+    --highlight: #d4af37;
+}
+
+body.light-mode {
+    --bg-color: #f0f2f5;
+    --text-color: #333333;
+    --score-color: #000000;
+    --card-bg: #ffffff;
+    --sidebar-bg: #ffffff;
+    --border-color: #cccccc;
+    --button-bg: #e4e6eb;
+    --button-text: #000000;
+    --input-bg: #ffffff;
+    --input-text: #000000;
+    --highlight: #b8860b;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0; padding: 0;
+    display: flex; flex-direction: row;
+    height: 100vh; overflow: hidden;
+}
+
+h1 { color: var(--highlight); font-size: 20px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* 2. SOL MENÜ */
+.sidebar {
+    width: 60px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 20px; flex-shrink: 0; z-index: 10;
+}
+
+.app-logo {
+    width: 40px; height: 40px; margin-bottom: 10px;
+    border-radius: 8px; object-fit: cover;
+}
+
+.nav-btn {
+    background: none; border: none; font-size: 24px;
+    margin-bottom: 10px; cursor: pointer; padding: 5px;
+    border-radius: 8px; width: 50px; height: 55px;
+    display: flex; flex-direction: column; /* İkon ve yazı alt alta */
+    align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.nav-btn.active { background-color: var(--button-bg); border: 1px solid var(--highlight); }
+
+.nav-label {
+    font-size: 9px;
+    margin-top: 2px;
+    color: #888;
+    font-family: sans-serif;
+    text-transform: uppercase;
+}
+.nav-btn.active .nav-label { color: var(--highlight); font-weight: bold; }
+
+/* 3. İÇERİK ALANI */
+.content-area {
+    flex-grow: 1; overflow-y: auto; padding: 15px;
+    display: flex; flex-direction: column; align-items: center; width: 100%;
+}
+
+.module {
+    display: none; width: 100%; max-width: 350px;
+    flex-direction: column; align-items: center;
+}
+.module.active { display: flex; }
+
+/* 4. OYUN EKRANI */
+.score-board { font-size: 60px; font-weight: bold; margin: 15px 0; color: var(--score-color); }
+
+.status-bar {
+    display: flex; justify-content: space-between; width: 100%;
+    max-width: 350px; margin-bottom: 10px; font-size: 16px; color: #aaa;
+}
+.status-highlight { color: var(--highlight); font-weight: bold; }
+
+.rounds-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+    gap: 5px; width: 100%; max-width: 350px; margin-bottom: 20px;
+}
+
+.round-cell {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 6px; text-align: center; padding: 8px 2px;
+    display: flex; flex-direction: column; justify-content: center;
+}
+.round-cell.active { border-color: var(--highlight); background-color: rgba(212, 175, 55, 0.1); }
+.round-num { font-size: 10px; color: #666; margin-bottom: 2px; }
+.round-score { font-size: 14px; font-weight: bold; color: var(--text-color); }
+
+/* 5. TUŞ TAKIMI */
+.keypad {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    width: 100%; max-width: 350px;
+}
+.keypad.numeric { grid-template-columns: repeat(3, 1fr); }
+
+button {
+    background-color: var(--button-bg); border: 1px solid var(--border-color);
+    color: var(--button-text); font-size: 18px; padding: 15px;
+    border-radius: 12px; touch-action: manipulation; cursor: pointer;
+}
+button:active { background-color: var(--highlight); color: #000; }
+
+.btn-undo { background-color: #555; color: white; }
+.btn-reset { background-color: #8b0000; color: white; grid-column: span 2; }
+.btn-delete-slot { background-color: #8b0000; color: white; font-size: 16px; padding: 5px; }
+
+/* 6. GENEL ELEMANLAR */
+input, select, textarea {
+    background-color: var(--input-bg); color: var(--input-text);
+    border: 1px solid var(--border-color); padding: 10px;
+    border-radius: 8px; font-size: 16px; width: 100%; box-sizing: border-box;
+}
+
+.history { margin-top: 20px; width: 100%; max-width: 350px; text-align: left; }
+.history-item {
+    border-bottom: 1px solid var(--border-color); padding: 10px 0;
+    display: flex; justify-content: space-between; font-size: 14px;
+}
+.btn-delete-record {
+    background: #8b0000; color: white; border: none; padding: 5px 10px;
+    border-radius: 4px; font-size: 12px; margin-left: 10px;
+}
+
+/* 7. SAĞ MENÜ */
+.right-sidebar {
+    width: 70px; background-color: var(--sidebar-bg);
+    border-left: 1px solid var(--border-color);
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 10px; overflow-y: auto; flex-shrink: 0; gap: 5px;
+    display: none;
+}
+.right-sidebar.show { display: flex; }
+
+.arrow-select-btn {
+    width: 45px; height: 45px; background: var(--button-bg);
+    border: 1px solid var(--border-color); color: var(--text-color);
+    border-radius: 50%; font-size: 14px; flex-shrink: 0;
+}
+.arrow-select-btn.selected { background: var(--highlight); color: #000; font-weight: bold; }
+.arrow-select-btn.center { margin: 0 auto; display: block; }
+
+.btn-stats {
+    background: var(--button-bg); border: 1px solid var(--border-color);
+    color: var(--button-text); padding: 10px 5px; border-radius: 8px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    text-align: center; font-size: 13px; font-weight: bold; flex-grow: 1; min-width: 70px;
+}
+.btn-stats:hover { border-color: var(--highlight); color: var(--highlight); }
+
+.arrow-group-input {
+    flex-grow: 1; background: var(--card-bg);
+    border: 1px solid var(--border-color); color: var(--input-text);
+    padding: 10px; border-radius: 8px;
+}
+
+/* 8. HEDEF ANALİZİ & SÜRÜKLE BIRAK */
+.target-wrapper {
+    width: 100%; max-width: 350px; aspect-ratio: 1;
+    min-height: 300px; margin: 20px 0; position: relative;
+    touch-action: none;
+    overflow: hidden; /* ZOOM TAŞMASINI ENGELLER */
+    transition: transform 0.2s ease; /* Zoom efekti için */
+    transform-origin: center center;
+}
+/* ZOOM EFEKTİ */
+.target-wrapper.zoomed {
+    transform: scale(2);
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    /* position: absolute; */
+}
+
+.arrow-tray {
+    display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.05); padding: 10px;
+    border-radius: 12px; border: 1px dashed var(--border-color);
+    margin-bottom: 15px; width: 100%; max-width: 350px;
+    box-sizing: border-box; min-height: 60px; align-items: center;
+}
+
+.draggable-arrow {
+    width: 35px; height: 35px; background-color: var(--highlight);
+    color: #000; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-weight: bold; font-size: 12px;
+    cursor: grab; user-select: none; touch-action: none; z-index: 100;
+}
+.draggable-arrow.used { opacity: 0.3; background-color: #555; pointer-events: none; }
+
+.target-rounds-selector { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; width: 100%; max-width: 350px; }
+.t-round-btn {
+    background: var(--card-bg); border: 1px solid var(--border-color); color: #666;
+    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;
+}
+.t-round-btn.active { background: var(--highlight); color: #000; }
+.t-round-btn.has-data { border-color: var(--highlight); color: var(--highlight); }
+.t-round-btn.active.has-data { color: #000; }
+
+/* 9. NOTLAR & TALİMHANE */
+.notes-list { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 15px; }
+.note-card, .analysis-card {
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 15px; margin-bottom: 10px; text-align: left;
+}
+.btn-add-note {
+    background-color: var(--highlight); color: #000; border: none;
+    padding: 10px 20px; border-radius: 20px; font-weight: bold;
+    margin-bottom: 20px; width: 100%; max-width: 350px;
+}
+
+.note-form {
+    width: 100%; max-width: 350px; background: var(--card-bg);
+    padding: 15px; border-radius: 12px; border: 1px solid var(--highlight);
+    margin-bottom: 20px; box-sizing: border-box;
+}
+
+.note-editor {
+    width: 100%; min-height: 150px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 10px; border-radius: 8px; box-sizing: border-box;
+    overflow-y: auto; margin-bottom: 10px; white-space: pre-wrap; outline: none;
+}
+.note-editor:focus { border-color: var(--highlight); background: rgba(255, 255, 255, 0.08); }
+.note-content img, .note-editor img { max-width: 100% !important; height: auto !important; border-radius: 8px; margin-top: 10px; display: block; object-fit: contain; }
+
+/* 10. MODALLAR */
+.image-modal {
+    display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+    width: 100%; height: 100%; background-color: rgba(0,0,0,0.9);
+    justify-content: center; align-items: center;
+}
+.modal-content {
+    max-width: 90%; max-height: 90%; background: var(--card-bg);
+    padding: 20px; border-radius: 12px; border: 1px solid var(--highlight);
+    color: var(--text-color); overflow-y: auto; position: relative;
+}
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; }
+
+.archive-btn {
+    background: var(--button-bg); border: 1px solid var(--border-color);
+    color: var(--button-text); padding: 8px 16px; border-radius: 20px;
+}
+.archive-btn.active { background: var(--highlight); color: #000; }
+.archive-controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+
+/* FİLTRE BUTONLARI */
+.filter-btn {
+    background: var(--button-bg); border: 1px solid var(--border-color);
+    color: #888; padding: 5px 10px; border-radius: 15px; font-size: 11px;
+}
+.filter-btn.active { background: #444; color: var(--highlight); border-color: var(--highlight); }
+
+/* GRAFİK */
+.chart-container {
+    width: 100%; height: 200px; background: var(--card-bg);
+    border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;
+}
+.chart-line { fill: none; stroke: var(--highlight); stroke-width: 3; }
+.chart-dot { fill: #121212; stroke: var(--highlight); stroke-width: 2; r: 4; }
+.chart-area { fill: var(--highlight); fill-opacity: 0.1; stroke: none; }
+
+/* PUSULA */
+.wind-compass {
+    position: relative; width: 100px; height: 100px; 
+    border: 2px solid #555; border-radius: 50%; 
+    margin: 0 auto 15px auto; 
+    background: radial-gradient(circle, #222 0%, #111 100%); 
+    box-shadow: inset 0 0 10px #000;
+    transition: transform 0.5s ease-out; /* Dönüş animasyonu */
+}
+
+/* ANİMASYONLAR */
+@keyframes flash-warning-anim {
+    0% { background-color: var(--button-bg); box-shadow: 0 0 0 red; }
+    50% { background-color: rgba(244, 67, 54, 0.8); box-shadow: 0 0 20px red; color: white; border-color: red; }
+    100% { background-color: var(--button-bg); box-shadow: 0 0 0 red; }
+}
+.flash-warning { animation: flash-warning-anim 0.8s ease-in-out 3; }
+
+#celebration-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 10000; display: none;
+    justify-content: center; align-items: center; background: rgba(0,0,0,0.4);
+}
+.record-card {
+    background: rgba(20, 20, 20, 0.95); border: 3px solid var(--highlight);
+    border-radius: 20px; padding: 30px 50px; text-align: center;
+    box-shadow: 0 0 50px rgba(212, 175, 55, 0.5); animation: popIn 0.6s ease;
+}
+.confetti { position: absolute; width: 10px; height: 10px; top: -10px; z-index: 10000; }
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; color: var(--text-color); }
+.stats-table th, .stats-table td { border-bottom: 1px solid var(--border-color); padding: 8px; text-align: left; }
+
+.arrow-settings {
+    width: 100%; max-width: 350px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 15px;
+}

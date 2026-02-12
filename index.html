@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kemankeş Defteri</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" href="logo.png?v=3" type="image/png">
+    <link rel="shortcut icon" href="logo.png?v=3" type="image/png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <!-- SOL MENÜ -->
+    <nav class="sidebar">
+        <img src="logo.png" class="app-logo" alt="Logo">
+        <div style="text-align:center; margin-bottom:15px; margin-top:-5px;">
+            <div style="font-family: 'Dancing Script', cursive; color:#d4af37; font-size:16px;">Kemankeş</div>
+            <div style="font-family: sans-serif; color:#666; font-size:10px; letter-spacing:1px;">v3.5</div>
+        </div>
+        
+        <button id="btn-18m" class="nav-btn active" onclick="switchModule('18m')">
+            <span>🎯</span>
+            <span class="nav-label">18m</span>
+        </button>
+        
+        <button id="btn-70m" class="nav-btn" onclick="switchModule('70m')">
+            <span>☀️</span>
+            <span class="nav-label">70m</span>
+        </button>
+        
+        <button id="btn-target" class="nav-btn" onclick="switchModule('target')">
+            <div style="position: relative; width: 24px; height: 24px;">
+                <span style="position: absolute; right: 0px; bottom: 0; font-size: 20px;">🎯</span>
+                <span style="position: absolute; left: -5px; top: 0; font-size: 16px;">🔎</span>
+            </div>
+            <span class="nav-label">Hedef</span>
+        </button>
+        
+        <button id="btn-analysis" class="nav-btn" onclick="switchModule('analysis')">
+            <div style="position: relative; width: 24px; height: 24px;">
+                <span style="position: absolute; right: 0px; bottom: 0; font-size: 20px;">🏹</span>
+                <span style="position: absolute; left: -5px; top: 0; font-size: 16px;">🔎</span>
+            </div>
+            <span class="nav-label">Analiz</span>
+        </button>
+        
+        <button id="btn-archive" class="nav-btn" onclick="switchModule('archive')">
+            <span>📈</span>
+            <span class="nav-label">Arşiv</span>
+        </button>
+
+        <div style="flex-grow: 1;"></div>
+
+        <!-- YENİ MODÜL: ANTRENÖR -->
+        <button id="btn-coach" class="nav-btn" onclick="switchModule('coach')">
+            <span>🏋️</span>
+            <span class="nav-label">Talim</span>
+        </button>
+
+        <button id="btn-notes" class="nav-btn" onclick="switchModule('notes')">
+            <span>📝</span>
+            <span class="nav-label">Notlar</span>
+        </button>
+        
+        <button id="btn-settings" class="nav-btn" onclick="switchModule('settings')">
+            <span>⚙️</span>
+            <span class="nav-label">Ayar</span>
+        </button>
+    </nav>
+
+    <!-- İÇERİK ALANI -->
+    <main class="content-area">
+        <!-- DİNAMİK OYUN ALANI -->
+        <div id="game-interface" class="module active">
+            <h1 id="moduleTitle">18m Salon Müsabaka</h1>
+            
+            <div class="total-text">TOPLAM PUAN</div>
+            <div class="score-board" id="totalScore">0</div>
+            <div id="ghostScore" class="ghost-score-display"></div> <!-- GHOST MODE -->
+
+            <div class="arrow-settings">
+                <button id="btnArrowSelect" class="btn-stats" onclick="toggleRightSidebar()">🏹 Ok Seç</button>
+                <button class="btn-stats" onclick="openBowSettings()">🛠️ Yay Ayarı</button>
+                <button id="btnWeather" class="btn-stats" onclick="toggleWeatherModal()" style="display:none;">🌤️ Hava</button>
+                <button class="btn-stats" onclick="showMatchStats()">📊 Özet</button>
+            </div>
+
+            <div class="status-bar">
+                <div>TUR: <span id="turDisplay" class="status-highlight">1</span>/7</div>
+                <div>OK: <span id="okDisplay" class="status-highlight">0</span>/5</div>
+            </div>
+
+            <div class="rounds-grid" id="roundsGrid"></div>
+
+            <!-- Tuş takımı JS ile dinamik oluşturulacak -->
+            <div class="keypad" id="keypad"></div>
+
+            <div class="history">
+                <h3>Son Atışlar</h3>
+                <div id="historyList">
+                </div>
+            </div>
+        </div>
+
+        <!-- HEDEF ANALİZİ MODÜLÜ -->
+        <div id="module-target" class="module">
+            <h1>Hedef Analizi</h1>
+            
+            <div class="archive-controls">
+                <button class="archive-btn active" onclick="switchTargetFace('18m', this)">18m Puta</button>
+                <button class="archive-btn" onclick="switchTargetFace('70m', this)">70m Puta</button>
+                <button class="archive-btn" onclick="switchTargetFace('50m', this)">50m Kalkan</button>
+            </div>
+
+            <!-- Tur Seçici -->
+            <div class="target-rounds-selector">
+                <button class="t-round-btn active" onclick="switchTargetRound(1)">1</button>
+                <button class="t-round-btn" onclick="switchTargetRound(2)">2</button>
+                <button class="t-round-btn" onclick="switchTargetRound(3)">3</button>
+                <button class="t-round-btn" onclick="switchTargetRound(4)">4</button>
+                <button class="t-round-btn" onclick="switchTargetRound(5)">5</button>
+                <button class="t-round-btn" onclick="switchTargetRound(6)">6</button>
+                <button class="t-round-btn" onclick="switchTargetRound(7)">7</button>
+            </div>
+
+            <!-- Ok Seti Tanımlama -->
+            <input type="text" id="targetNoteInput" class="arrow-set-input" placeholder="Not: (Rüzgar soldan, hatalı bırakış vb.)">
+
+            <div class="target-wrapper" id="targetWrapper">
+                <svg id="targetFace" viewBox="0 0 400 400" onclick="handleTargetClick(event)">
+                    <!-- Resim Tabanlı Hedef -->
+                    <image id="targetImg" href="puta_kafa_18.png" x="0" y="0" width="400" height="400" preserveAspectRatio="xMidYMid meet" />
+
+                    <!-- Ok İşaretleri Grubu -->
+                    <g id="targetMarks"></g>
+                </svg>
+            </div>
+
+            <div class="keypad">
+                <button class="btn-undo" onclick="undoTargetMark()">Son Oku Sil</button>
+                <button class="btn-reset" onclick="saveTargetAnalysis()">Analizi Kaydet</button>
+            </div>
+
+            <div class="history" style="width: 100%;">
+                <h3>Analiz Geçmişi</h3>
+                <div id="targetHistoryList"></div>
+            </div>
+        </div>
+
+        <!-- OK ANALİZİ MODÜLÜ -->
+        <div id="module-analysis" class="module">
+            <h1>Ok Performans Analizi</h1>
+            
+            <div class="archive-controls">
+                <button class="archive-btn active" onclick="renderArrowAnalysis('18m', this)">18m Salon</button>
+                <button class="archive-btn" onclick="renderArrowAnalysis('70m', this)">70m Açık Hava</button>
+            </div>
+            
+            <div class="archive-controls" style="margin-top: 0;">
+                 <button class="btn-stats" onclick="renderArrowAnalysis(null, null, 'accuracy')">🎯 İsabet Sırala</button>
+                 <button class="btn-stats" style="background-color: #8b0000;" onclick="clearArrowAnalysis()">🗑️ Verileri Temizle</button>
+            </div>
+
+            <div id="analysisContent" style="width: 100%; max-width: 350px;">
+            </div>
+        </div>
+
+        <!-- ARŞİV MODÜLÜ -->
+        <div id="module-archive" class="module">
+            <h1>Kemankeş Arşivi</h1>
+            
+            <div class="archive-controls">
+                <button class="archive-btn active" onclick="renderArchive('18m', this)">18m Salon</button>
+                <button class="archive-btn" onclick="renderArchive('70m', this)">70m Açık Hava</button>
+            </div>
+
+            <!-- ZAMAN FİLTRESİ -->
+            <div class="archive-controls" style="margin-top: 5px; gap: 5px;">
+                <button class="filter-btn active" onclick="filterArchive('all', this)">Tümü</button>
+                <button class="filter-btn" onclick="filterArchive('1w', this)">1 Hafta</button>
+                <button class="filter-btn" onclick="filterArchive('1m', this)">1 Ay</button>
+                <button class="filter-btn" onclick="filterArchive('6m', this)">6 Ay</button>
+                <button class="filter-btn" onclick="filterArchive('season', this)">Sezon</button>
+            </div>
+
+            <div class="chart-container" id="chartContainer">
+                <!-- Grafik buraya çizilecek -->
+            </div>
+
+            <div class="history" style="width: 100%;">
+                <h3>Kayıt Defteri</h3>
+                <div id="archiveList"></div>
+            </div>
+        </div>
+
+        <!-- YENİ MODÜL: ANTRENÖR (TALİMHANE) -->
+        <div id="module-coach" class="module">
+            <h1>Talimhane</h1>
+            
+            <div class="archive-controls">
+                <button class="archive-btn active" onclick="renderDrills()">🎲 Rastgele Drill</button>
+                <button class="archive-btn" onclick="renderSPT()">💪 Güç & Kondisyon</button>
+            </div>
+
+            <div id="coachContent" style="width: 100%; max-width: 350px;">
+                <!-- İçerik JS ile dolacak -->
+            </div>
+        </div>
+
+        <!-- NOTLAR MODÜLÜ -->
+        <div id="module-notes" class="module">
+            <h1>Atış Notlarım</h1>
+            
+            <button id="showFormBtn" class="btn-add-note" onclick="toggleNoteForm(true)">+ Yeni Not Ekle</button>
+
+            <div id="addNoteForm" class="note-form" style="display:none;">
+                <input type="text" id="noteTitle" class="note-title-input" placeholder="Başlık (Örn: Yay Ayarı)">
+                <div id="noteEditor" class="note-editor" contenteditable="true" data-placeholder="Notunuzu buraya yazın..."></div>
+
+                <div class="form-actions">
+                    <input type="file" id="noteImageInput" accept="image/*" style="display:none" onchange="handleNoteImage(this)">
+                    <button onclick="document.getElementById('noteImageInput').click()" style="background:#333;">📷 Fotoğraf</button>
+                    <button onclick="saveNote()" style="background:#d4af37; color:black;">Kaydet</button>
+                    <button onclick="toggleNoteForm(false)" style="background:#8b0000;">İptal</button>
+                </div>
+            </div>
+
+            <div id="notesList" class="notes-list"></div>
+        </div>
+
+        <!-- AYARLAR MODÜLÜ -->
+        <div id="module-settings" class="module">
+            <h1>Ayarlar & Yedekleme</h1>
+            
+            <div class="analysis-card">
+                <div class="analysis-highlight">Görünüm</div>
+                <button class="btn-add-note" onclick="toggleTheme()">🌓 Tema Değiştir</button>
+            </div>
+
+            <div class="analysis-card">
+                <div class="analysis-highlight">Veri Yedekleme</div>
+                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Tüm antrenman geçmişinizi, analizlerinizi ve notlarınızı yedekleyin veya geri yükleyin.</p>
+                
+                <button class="btn-add-note" onclick="exportData()">📥 Yedeği İndir (Dışa Aktar)</button>
+                
+                <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+                    <p style="font-size:14px; color:#aaa; margin-bottom:10px;">Yedek dosyasını seçerek verileri geri yükleyin:</p>
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+                    <button class="btn-add-note" style="background-color: #333; color: #fff; border: 1px solid #555;" onclick="document.getElementById('importFile').click()">📤 Yedeği Yükle (İçe Aktar)</button>
+                </div>
+            </div>
+            
+            <div class="analysis-card" style="border-color: #8b0000; margin-top: 20px;">
+                <div class="analysis-highlight" style="color: #f44336;">Tehlikeli Bölge</div>
+                <p style="font-size:14px; color:#aaa;">Uygulamadaki tüm verileri kalıcı olarak siler.</p>
+                <button class="btn-add-note" style="background-color: #8b0000; color: #fff;" onclick="hardResetApp()">⚠️ Uygulamayı Sıfırla</button>
+            </div>
+        </div>
+
+        <!-- SPT EKLEME MODALI (YENİ) -->
+        <div id="sptModal" class="image-modal" onclick="if(event.target===this) this.style.display='none'">
+            <div class="modal-content" style="background:var(--card-bg); padding:20px; width:90%; max-width:350px; color:var(--text-color); border: 1px solid #d4af37;">
+                <span class="close-modal" onclick="document.getElementById('sptModal').style.display='none'">&times;</span>
+                <h2 style="color:#d4af37; margin-top:0;">Yeni Hareket Ekle</h2>
+                
+                <input type="text" id="sptName" class="arrow-group-input" placeholder="Hareket Adı" style="margin-bottom:10px; width:100%;">
+                <textarea id="sptDesc" class="arrow-group-input" placeholder="Açıklama / Süre" style="margin-bottom:10px; width:100%; height:60px;"></textarea>
+                
+                <div style="margin-bottom:15px;">
+                    <label style="font-size:12px; color:#888;">Görsel / GIF Ekle (Max 2)</label>
+                    <input type="file" id="sptImageInput" accept="image/*" multiple onchange="handleSPTImage(this)" style="margin-top:5px;">
+                    <div id="sptImagePreview" style="display:flex; gap:5px; margin-top:5px;"></div>
+                </div>
+
+                <button class="btn-add-note" onclick="saveSPT()">Kaydet</button>
+            </div>
+        </div>
+
+        <!-- Resim Modal -->
+        <div id="imageModal" class="image-modal" onclick="this.style.display='none'">
+            <span class="close-modal">&times;</span>
+            <img class="modal-content" id="fullImage">
+        </div>
+
+        <!-- İstatistik Modal -->
+        <div id="statsModal" class="image-modal" onclick="if(event.target===this) this.style.display='none'">
+            <div class="modal-content" style="background:var(--card-bg); padding:20px; width:90%; max-width:400px; color:var(--text-color); overflow-y:auto;">
+                <span class="close-modal" onclick="document.getElementById('statsModal').style.display='none'">&times;</span>
+                <h2 style="color:#d4af37; margin-top:0;">Müsabaka Özeti</h2>
+                <div id="statsContent"></div>
+            </div>
+        </div>
+
+        <!-- REKOR KUTLAMA EKRANI -->
+        <div id="celebration-overlay">
+            <div class="record-card">
+                <div class="record-title">🏆 YENİ REKOR! 🏆</div>
+                <div class="record-score" id="record-score-display">0</div>
+            </div>
+        </div>
+
+        <!-- HAVA DURUMU MODAL -->
+        <div id="weatherModal" class="image-modal" onclick="if(event.target===this) this.style.display='none'">
+            <div class="modal-content" style="background:var(--card-bg); padding:20px; width:90%; max-width:350px; color:var(--text-color); text-align:center; border: 1px solid #d4af37;">
+                <span class="close-modal" onclick="document.getElementById('weatherModal').style.display='none'">&times;</span>
+                <h2 style="color:#d4af37; margin-top:0;">Hava Durumu</h2>
+                <div id="weatherStatus" style="color:#888; margin-bottom:10px;"></div>
+                
+                <div id="manualLocationInput" style="display:none; margin-bottom:15px;">
+                    <div style="display:flex; gap:5px; justify-content:center;">
+                        <input type="text" id="cityInput" placeholder="Şehir/İlçe girin..." style="padding:8px; border-radius:4px; border:1px solid #555; background:#333; color:#fff; width:60%;">
+                        <button onclick="getWeatherByCity()" style="padding:8px 12px; border-radius:4px; background:#d4af37; color:#000; border:none; cursor:pointer; font-weight:bold;">Ara</button>
+                    </div>
+                </div>
+
+                <div id="weatherContent" style="display:none;">
+                    <div id="weatherLocation" style="font-size:16px; font-weight:bold; margin-bottom:20px; color:#fff; border-bottom:1px solid #333; padding-bottom:10px;"></div>
+                    
+                    <!-- GÖRSEL PUSULA -->
+                    <div class="wind-compass" id="compassContainer" style="position: relative; width: 140px; height: 140px; margin: 0 auto 15px auto; background: radial-gradient(circle at center, #2a2a2a 0%, #111 100%); border-radius: 50%; border: 4px solid #333; box-shadow: inset 0 0 20px #000, 0 0 15px rgba(0,0,0,0.7);">
+                        
+                        <!-- Pusula Gülü (SVG Arka Plan) -->
+                        <svg viewBox="0 0 100 100" style="position: absolute; top:0; left:0; width:100%; height:100%; opacity: 0.4; pointer-events: none;">
+                            <circle cx="50" cy="50" r="46" fill="none" stroke="#555" stroke-width="1" stroke-dasharray="2,2" />
+                            <line x1="50" y1="2" x2="50" y2="10" stroke="#d4af37" stroke-width="2" /> <!-- N marker -->
+                            <line x1="50" y1="90" x2="50" y2="98" stroke="#555" stroke-width="2" />
+                            <line x1="2" y1="50" x2="10" y2="50" stroke="#555" stroke-width="2" />
+                            <line x1="90" y1="50" x2="98" y2="50" stroke="#555" stroke-width="2" />
+                        </svg>
+
+                        <!-- Yön Harfleri -->
+                        <div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-family: sans-serif; font-weight: 900; color: #f44336; font-size: 14px; text-shadow: 0 0 5px rgba(244, 67, 54, 0.5);">N</div>
+                        <div style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-family: sans-serif; font-weight: bold; color: #666; font-size: 12px;">S</div>
+                        <div style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-family: sans-serif; font-weight: bold; color: #666; font-size: 12px;">W</div>
+                        <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-family: sans-serif; font-weight: bold; color: #666; font-size: 12px;">E</div>
+
+                        <!-- Rüzgar Oku (Merkezde Dönen) -->
+                        <div id="windArrowIcon" style="position: absolute; top: 50%; left: 50%; width: 100px; height: 100px; transform: translate(-50%, -50%) rotate(0deg); pointer-events: none; display: flex; align-items: center; justify-content: center; z-index: 10;">
+                            <!-- Ok Görseli (SVG) -->
+                            <svg viewBox="0 0 60 100" width="60" height="100" style="filter: drop-shadow(0 5px 5px rgba(0,0,0,0.6));">
+                                <defs>
+                                    <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#f44336;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <!-- Ok Gövdesi -->
+                                <path d="M30 5 L55 45 L40 45 L40 95 L20 95 L20 45 L5 45 Z" fill="url(#arrowGradient)" stroke="#fff" stroke-width="1.5" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Merkez Pin -->
+                        <div style="position: absolute; top: 50%; left: 50%; width: 12px; height: 12px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 5px #000; z-index: 11; border: 2px solid #333;"></div>
+                    </div>
+                    
+                    <button id="btnCalibrateCompass" onclick="startCompass()" style="font-size:11px; padding:5px 10px; margin-bottom:15px; background:#333; border:1px solid #555; color:#fff; border-radius:15px;">🧭 Rüzgar Yönünü Eşitle (Kalibre Et)</button>
+
+                    <div class="weather-info-grid">
+                        <div class="round-cell" style="width:auto;">
+                            <div class="round-num">SICAKLIK</div>
+                            <div class="round-score" id="weatherTemp" style="font-size:18px;">-</div>
+                        </div>
+                        <div class="round-cell" style="width:auto;">
+                            <div class="round-num">YOĞUNLUK İRT.</div>
+                            <div class="round-score" id="weatherDA" style="font-size:18px;">-</div>
+                        </div>
+                        <div class="round-cell" style="width:auto;">
+                            <div class="round-num">RÜZGAR HIZI</div>
+                            <div class="round-score" id="weatherWindSpeed" style="font-size:18px;">-</div>
+                        </div>
+                        <div class="round-cell" style="width:auto;">
+                            <div class="round-num">BASINÇ</div>
+                            <div class="round-score" id="weatherPressure" style="font-size:18px;">-</div>
+                        </div>
+                    </div>
+                    <div id="weatherTip" style="margin-top:15px; font-size:13px; color:#d4af37; font-style:italic; border-top:1px solid #333; padding-top:10px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- YAY AYARLARI MODALI -->
+        <div id="bowSettingsModal" class="image-modal" onclick="if(event.target===this) this.style.display='none'">
+            <div class="modal-content" style="background:var(--card-bg); padding:20px; width:90%; max-width:350px; color:var(--text-color); border: 1px solid #d4af37;">
+                <span class="close-modal" onclick="document.getElementById('bowSettingsModal').style.display='none'">&times;</span>
+                <h2 style="color:#d4af37; margin-top:0; font-size: 20px;">Yay & Ekipman Ayarları</h2>
+                
+                <!-- Slot Seçimi -->
+                <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">
+                    <button id="bowSlot0" class="arrow-select-btn" style="width:auto; padding:0 15px; border-radius:8px;" onclick="switchBowSlot(0)">Yay 1</button>
+                    <button id="bowSlot1" class="arrow-select-btn" style="width:auto; padding:0 15px; border-radius:8px;" onclick="switchBowSlot(1)">Yay 2</button>
+                    <button id="bowSlot2" class="arrow-select-btn" style="width:auto; padding:0 15px; border-radius:8px;" onclick="switchBowSlot(2)">Yay 3</button>
+                </div>
+
+                <div id="bowFormContent">
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:#888;">Yay İsmi / Model</label>
+                        <input type="text" id="bowName" class="arrow-group-input" style="width:100%; box-sizing:border-box;" placeholder="Örn: Hoyt Formula...">
+                    </div>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;">
+                            <label style="font-size:12px; color:#888;">Kiriş Yüksekliği</label>
+                            <input type="text" id="bowBrace" class="arrow-group-input" style="width:100%; box-sizing:border-box;" placeholder="Örn: 22.5 cm">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:12px; color:#888;">Düğül Ayarı</label>
+                            <input type="text" id="bowNock" class="arrow-group-input" style="width:100%; box-sizing:border-box;" placeholder="Örn: +4 mm">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:#888;">Zihgir / Eldiven / Tab</label>
+                        <input type="text" id="bowFinger" class="arrow-group-input" style="width:100%; box-sizing:border-box;" placeholder="Kullanılan ekipman...">
+                    </div>
+                    
+                    <!-- FOC HESAPLAYICI -->
+                    <div style="margin:15px 0; padding-top:10px; border-top:1px solid #444;">
+                        <div style="font-size:14px; color:#d4af37; font-weight:bold; margin-bottom:10px;">FOC Hesaplayıcı</div>
+                        <div style="display:flex; gap:10px; margin-bottom:10px;">
+                            <input type="number" id="focLength" class="arrow-group-input" style="width:50%;" placeholder="Ok Uzunluğu (cm)">
+                            <input type="number" id="focBalance" class="arrow-group-input" style="width:50%;" placeholder="Denge Noktası (cm)">
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <button class="btn-stats" style="padding:5px 10px; font-size:12px;" onclick="calculateFOC()">Hesapla</button>
+                            <span id="focResult" style="font-size:12px; color:#fff;"></span>
+                        </div>
+                    </div>
+
+                    <button class="btn-add-note" onclick="saveBowSettings()">💾 Ayarları Kaydet</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOT DETAY MODALI (OKUMA MODU) -->
+        <div id="noteDetailModal" class="image-modal" onclick="if(event.target===this) this.style.display='none'">
+            <div class="modal-content" style="background:var(--card-bg); padding:20px; width:90%; max-width:500px; color:var(--text-color); overflow-y:auto; max-height:80vh; border: 1px solid #d4af37; border-radius:12px;">
+                <span class="close-modal" onclick="document.getElementById('noteDetailModal').style.display='none'">&times;</span>
+                <div id="noteDetailDate" style="font-size:12px; color:#888; margin-bottom:5px;"></div>
+                <h2 id="noteDetailTitle" style="color:#d4af37; margin-top:0; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"></h2>
+                <div id="noteDetailBody" class="note-editor" style="border:none; background:none; padding:0; min-height:auto;"></div>
+                <div style="margin-top:20px; text-align:right;">
+                    <button id="noteDetailEditBtn" class="btn-add-note" style="width:auto; padding:8px 20px; font-size:14px;">Düzenle</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SAĞ MENÜ (OK SEÇİCİ) -->
+    <aside class="right-sidebar" id="arrowSelectorSidebar">
+        <!-- JS ile doldurulacak -->
+    </aside>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

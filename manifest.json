@@ -1,0 +1,16 @@
+{
+  "name": "Kemankeş Defteri",
+  "short_name": "Kemankeş",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#12161f",
+  "theme_color": "#d4af37",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png", 
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
