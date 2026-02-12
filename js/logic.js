@@ -16,6 +16,7 @@ const moduleStrategies = {
         UI.loadTargetHistoryUI();
         switchTargetFace(state.currentTargetFace, null, false);
         switchTargetRound(state.currentTargetRound);
+        UI.injectTargetResetButton();
     },
     'analysis': () => {
         document.getElementById('module-analysis')?.classList.add('active');
@@ -282,6 +283,13 @@ function addShotToTarget(x, y, label) { let currentRoundData = state.targetSessi
 export function handleTargetClick(event) { if (event.target.closest && event.target.closest('g') && event.target.closest('g').hasAttribute('onclick')) return; const svg = document.getElementById('targetFace'); const pt = svg.createSVGPoint(); pt.x = event.clientX; pt.y = event.clientY; const svgP = pt.matrixTransform(svg.getScreenCTM().inverse()); let label = "?"; const currentRoundData = state.targetSessionData[state.currentTargetFace][state.currentTargetRound - 1]; const usedLabels = currentRoundData.map(p => p.label); const sourceModule = state.currentTargetFace === '70m' ? '70m' : '18m'; const moduleArrows = state.sessions[sourceModule].arrowLabels; const targetConfig = targetConfigs[state.currentTargetFace]; const count = targetConfig ? targetConfig.arrowCount : 5; for(let i=0; i<count; i++) { let lbl = moduleArrows[i] || (i+1).toString(); if(!usedLabels.includes(lbl)) { label = lbl; break; } } addShotToTarget(svgP.x, svgP.y, label); }
 export function editTargetMark(index, event) { event.stopPropagation(); const currentData = state.targetSessionData[state.currentTargetFace][state.currentTargetRound - 1]; const newVal = prompt("Ok numarası:", currentData[index].label); if (newVal !== null) { if (newVal.trim() === "") currentData.splice(index, 1); else currentData[index].label = newVal; switchTargetRound(state.currentTargetRound); } }
 export function undoTargetMark() { const currentData = state.targetSessionData[state.currentTargetFace][state.currentTargetRound - 1]; if (currentData && currentData.length > 0) { currentData.pop(); switchTargetRound(state.currentTargetRound); } }
+export function resetTargetSession() {
+    if(confirm("Tüm turları sıfırlamak istediğinize emin misiniz?")) {
+        state.targetSessionData[state.currentTargetFace] = Array(7).fill(null).map(() => []);
+        switchTargetRound(1);
+        alert("Tüm turlar sıfırlandı ve veri girişine hazır.");
+    }
+}
 export function saveTargetAnalysis() { 
     const note = document.getElementById('targetNoteInput').value; 
     const historyItem = { date: new Date().toLocaleDateString('tr-TR'), time: new Date().toLocaleTimeString('tr-TR'), face: state.currentTargetFace, rounds: state.targetSessionData[state.currentTargetFace], note: note }; 
@@ -626,6 +634,7 @@ window.switchTargetFace = switchTargetFace;
 window.switchTargetRound = switchTargetRound;
 window.handleTargetClick = handleTargetClick;
 window.undoTargetMark = undoTargetMark;
+window.resetTargetSession = resetTargetSession;
 window.saveTargetAnalysis = saveTargetAnalysis;
 window.loadTargetAnalysisFromHistory = loadTargetAnalysisFromHistory;
 window.deleteTargetHistory = deleteTargetHistory;

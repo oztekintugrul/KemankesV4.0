@@ -186,12 +186,12 @@ export function updateKeypad(moduleId) {
             const txt = isSel ? '<span style="font-size:10px; color:#000;">(Hit)</span>' : '<span style="font-size:10px; color:#888;">(Miss)</span>';
             html += `<button id="arrowBtn70m_${i-1}" onclick="window.toggleArrow70m(${i-1})" style="font-size:14px; padding:10px; ${style}">${getLbl(i-1)}<br>${txt}</button>`;
         }
-        html += `<button class="btn-reset" onclick="window.submitRound70m()">Kaydet & İlerle</button>
-                 <div style="grid-column: span 3; text-align: center; color: #666; font-size: 12px; margin: 5px 0;">-------- hızlı giriş --------</div>`;
+        html += `<button class="btn-reset" onclick="window.submitRound70m()" style="grid-column: span 3;">Kaydet & İlerle</button>
+                 <button class="btn-reset" onclick="window.resetScore()" style="grid-column: span 3; background-color:#333;">Sıfırla & Kaydet</button>
+                 <div style="grid-column: span 3; text-align: center; color: #666; font-size: 12px; margin: 5px 0;">-------- hızlı giriş --------</div>
+                 <button class="btn-undo" onclick="window.undoLastShot()" style="grid-column: span 3; padding:10px; font-size:16px;">Sil</button>`;
         [7,8,9,4,5,6,1,2,3].forEach(n => html += `<button onclick="window.addScore(${n})" style="padding:10px; font-size:18px;">${n}</button>`);
-        html += `<button class="btn-undo" onclick="window.undoLastShot()" style="padding:10px; font-size:16px;">Sil</button>
-                 <button onclick="window.addScore(0)" style="padding:10px; font-size:18px;">0</button>
-                 <button class="btn-reset" onclick="window.resetScore()">Sıfırla & Kaydet</button>`;
+        html += `<button onclick="window.addScore(0)" style="grid-column: 2; padding:10px; font-size:18px;">0</button>`;
         keypad.style.gridTemplateColumns = "repeat(3, 1fr)"; 
         keypad.innerHTML = html;
     }
@@ -1647,6 +1647,23 @@ export function loadTargetHistoryUI() {
     if(list.firstChild && list.firstChild.lastChild) {
         list.firstChild.lastChild.style.display = 'block';
         list.firstChild.firstChild.querySelector('span:last-child').innerText = list.firstChild.firstChild.querySelector('span:last-child').innerText.replace('▼', '▲');
+    }
+}
+
+export function injectTargetResetButton() {
+    let undoBtn = document.querySelector('button[onclick="window.undoTargetMark()"]');
+    if (!undoBtn) undoBtn = document.querySelector('button[onclick="undoTargetMark()"]');
+    
+    if (undoBtn && !document.getElementById('btnResetTarget')) {
+        const btn = document.createElement('button');
+        btn.id = 'btnResetTarget';
+        btn.innerText = 'Hepsini Sil';
+        btn.className = undoBtn.className; 
+        btn.style.cssText = undoBtn.style.cssText;
+        btn.style.marginLeft = '10px';
+        btn.style.backgroundColor = '#8b0000';
+        btn.onclick = window.resetTargetSession;
+        undoBtn.parentNode.insertBefore(btn, undoBtn.nextSibling);
     }
 }
 

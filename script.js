@@ -167,6 +167,7 @@ function switchModule(moduleId, shouldRender = true) {
         // Buton durumunu güncelle (resim değişmez, sadece buton aktifliği)
         switchTargetFace(currentTargetFace, null, false); // false: active class resetleme
         switchTargetRound(currentTargetRound); // Ekranı ve noktaları yenile
+        injectTargetResetButton();
     } else if (moduleId === 'analysis') {
         document.getElementById('btn-analysis').classList.add('active');
         renderArrowAnalysis('18m'); // Varsayılan 18m
@@ -294,18 +295,17 @@ function updateKeypad(moduleId) {
             buttonsHTML += `<button id="arrowBtn70m_${i-1}" onclick="toggleArrow70m(${i-1})" style="font-size:14px; padding:10px; ${btnStyle}">${label}<br>${subText}</button>`;
         }
 
-        buttonsHTML += `<button class="btn-reset" onclick="submitRound70m()">Kaydet & İlerle</button>`;
+        buttonsHTML += `<button class="btn-reset" onclick="submitRound70m()" style="grid-column: span 3;">Kaydet & İlerle</button>`;
+        buttonsHTML += `<button class="btn-reset" onclick="resetScore()" style="grid-column: span 3; background-color:#333;">Sıfırla & Kaydet</button>`;
         buttonsHTML += `<div style="grid-column: span 3; text-align: center; color: #666; font-size: 12px; margin: 5px 0;">-------- hızlı giriş --------</div>`;
+        buttonsHTML += `<button class="btn-undo" onclick="undoLastShot()" style="grid-column: span 3; padding:10px; font-size:16px;">Sil</button>`;
 
         // 7-8-9, 4-5-6, 1-2-3 sırası
         [7,8,9,4,5,6,1,2,3].forEach(num => {
             buttonsHTML += `<button onclick="addScore(${num})" style="padding:10px; font-size:18px;">${num}</button>`;
         });
         
-        buttonsHTML += `<button class="btn-undo" onclick="undoLastShot()" style="padding:10px; font-size:16px;">Sil</button>`;
-        buttonsHTML += `<button onclick="addScore(0)" style="padding:10px; font-size:18px;">0</button>`;
-        // Boşluk yerine stil için boş div veya pasif buton konabilir, şimdilik boş bırakalım
-        buttonsHTML += `<button class="btn-reset" onclick="resetScore()">Sıfırla & Kaydet</button>`;
+        buttonsHTML += `<button onclick="addScore(0)" style="grid-column: 2; padding:10px; font-size:18px;">0</button>`;
         keypad.innerHTML = buttonsHTML;
     }
 }
@@ -1781,6 +1781,32 @@ function undoTargetMark() {
         targetPoints.pop();
         renderTargetMarks();
         switchTargetRound(currentTargetRound);
+    }
+}
+
+function injectTargetResetButton() {
+    let undoBtn = document.querySelector('button[onclick="window.undoTargetMark()"]');
+    if (!undoBtn) undoBtn = document.querySelector('button[onclick="undoTargetMark()"]');
+    
+    if (undoBtn && !document.getElementById('btnResetTarget')) {
+        const btn = document.createElement('button');
+        btn.id = 'btnResetTarget';
+        btn.innerText = 'Hepsini Sil';
+        btn.className = undoBtn.className;
+        btn.style.cssText = undoBtn.style.cssText;
+        btn.style.marginLeft = '10px';
+        btn.style.backgroundColor = '#8b0000';
+        btn.onclick = resetTargetSession;
+        undoBtn.parentNode.insertBefore(btn, undoBtn.nextSibling);
+    }
+}
+
+function resetTargetSession() {
+    if(confirm("Tüm turları sıfırlamak istediğinize emin misiniz?")) {
+        targetSessionData = Array(7).fill(null).map(() => []);
+        targetPoints = targetSessionData[0];
+        switchTargetRound(1);
+        alert("Tüm turlar sıfırlandı ve veri girişine hazır.");
     }
 }
 
