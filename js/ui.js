@@ -1667,13 +1667,13 @@ export function renderDrills() {
     const timerHTML = `
     <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; border:1px solid #444; margin-bottom:15px; display:flex; flex-direction:column; align-items:center;">
         <div id="timerDisplay" style="font-size:32px; font-weight:bold; color:#d4af37; font-family:monospace; margin-bottom:5px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);">00:00</div>
-        <div style="display:flex; gap:10px; align-items:center;">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;">
             <input type="number" id="timerInput" placeholder="Sn" style="width:60px; padding:8px; border-radius:5px; border:1px solid #555; background:#222; color:#fff; text-align:center; font-size:14px;">
             <button onclick="window.startTimer()" style="background:#4caf50; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Başlat</button>
             <button onclick="window.stopTimer()" style="background:#f44336; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Durdur</button>
             <button onclick="window.resetTimer()" style="background:#333; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Sıfırla</button>
         </div>
-        <div style="font-size:11px; color:#aaa; margin-top:5px;">(Süre girerseniz geri sayar, boş bırakırsanız kronometre çalışır)</div>
+        <div style="font-size:11px; color:#aaa; margin-top:5px; text-align:center;">(Süre girerseniz geri sayar, boş bırakırsanız kronometre çalışır)</div>
     </div>`;
 
     // Kayıtlı Drill Listesini Çek (Yoksa varsayılanları yükle)
@@ -1737,13 +1737,13 @@ export function renderSPT() {
     const timerHTML = `
     <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; border:1px solid #444; margin-bottom:15px; display:flex; flex-direction:column; align-items:center;">
         <div id="timerDisplay" style="font-size:32px; font-weight:bold; color:#d4af37; font-family:monospace; margin-bottom:5px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);">00:00</div>
-        <div style="display:flex; gap:10px; align-items:center;">
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;">
             <input type="number" id="timerInput" placeholder="Sn" style="width:60px; padding:8px; border-radius:5px; border:1px solid #555; background:#222; color:#fff; text-align:center; font-size:14px;">
             <button onclick="window.startTimer()" style="background:#4caf50; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Başlat</button>
             <button onclick="window.stopTimer()" style="background:#f44336; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Durdur</button>
             <button onclick="window.resetTimer()" style="background:#333; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:bold;">Sıfırla</button>
         </div>
-        <div style="font-size:11px; color:#aaa; margin-top:5px;">(Süre girerseniz geri sayar, boş bırakırsanız kronometre çalışır)</div>
+        <div style="font-size:11px; color:#aaa; margin-top:5px; text-align:center;">(Süre girerseniz geri sayar, boş bırakırsanız kronometre çalışır)</div>
     </div>`;
 
     // Varsayılan SPT Listesi
