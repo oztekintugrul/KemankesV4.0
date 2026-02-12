@@ -607,12 +607,10 @@ export function drawChart(data) {
                 touchStartY = e.touches[0].clientY;
             }
             
-            showBubble(e); // Tooltip göster
-
             pressTimer = setTimeout(() => {
                 openHistoryDetailModal(item); // Detay penceresini aç
                 if (navigator.vibrate) navigator.vibrate(50);
-            }, 800); // 800ms basılı tutunca açılır
+            }, 400); // Hemen açılması için süre kısaltıldı
         };
 
         const movePress = (e) => {
@@ -676,7 +674,7 @@ export function drawChart(data) {
 
 let currentArchiveType = '18m'; 
 let currentArchiveBow = 'all';
-let currentArchiveFilter = 'all'; // Zaman filtresi
+let currentArchiveFilter = 'season'; // Zaman filtresi
 
 export function filterArchive(range, btn) {
     currentArchiveFilter = range;

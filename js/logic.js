@@ -288,7 +288,7 @@ export function saveTargetAnalysis() {
     const savedHistory = JSON.parse(localStorage.getItem('kemankesTargetHistory')) || []; 
     savedHistory.unshift(historyItem); 
     try { localStorage.setItem('kemankesTargetHistory', JSON.stringify(savedHistory)); } catch(e) { if(e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') { alert("⚠️ HAFIZA DOLU!\n\nHedef analizi kaydedilemedi. Lütfen eski kayıtları silin."); return; } }
-    state.targetSessionData[state.currentTargetFace] = Array(7).fill(null).map(() => []); document.getElementById('targetNoteInput').value = ''; switchTargetRound(1); alert("Kaydedildi."); UI.loadTargetHistoryUI(); 
+    state.targetSessionData[state.currentTargetFace] = Array(7).fill(null).map(() => []); saveActiveSession(); document.getElementById('targetNoteInput').value = ''; switchTargetRound(1); alert("Kaydedildi ve Sıfırlandı."); UI.loadTargetHistoryUI(); 
 }
 export function loadTargetAnalysisFromHistory(index) { const history = JSON.parse(localStorage.getItem('kemankesTargetHistory')) || []; const item = history[index]; if (!item) return; if (state.targetSessionData[state.currentTargetFace].some(r => r.length > 0)) if (!confirm("Mevcut silinecek?")) return; state.targetSessionData[state.currentTargetFace] = JSON.parse(JSON.stringify(item.rounds)); state.currentTargetFace = item.face; document.getElementById('targetNoteInput').value = item.note || ''; document.querySelectorAll('#module-target .archive-btn').forEach(btn => { if (btn.getAttribute('onclick').includes(`'${state.currentTargetFace}'`)) btn.classList.add('active'); else btn.classList.remove('active'); }); switchTargetFace(state.currentTargetFace, null); switchTargetRound(1); }
 

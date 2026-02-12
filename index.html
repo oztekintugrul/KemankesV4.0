@@ -140,7 +140,7 @@
 
             <div class="keypad">
                 <button class="btn-undo" onclick="undoTargetMark()">Son Oku Sil</button>
-                <button class="btn-reset" onclick="saveTargetAnalysis()">Analizi Kaydet</button>
+                <button class="btn-reset" onclick="saveTargetAnalysis()">Analizi Kaydet ve Sıfırla</button>
             </div>
 
             <div class="history" style="width: 100%;">
@@ -178,11 +178,11 @@
 
             <!-- ZAMAN FİLTRESİ -->
             <div class="archive-controls" style="margin-top: 5px; gap: 5px;">
-                <button class="filter-btn active" onclick="filterArchive('all', this)">Tümü</button>
+                <button class="filter-btn active" onclick="filterArchive('season', this)">Sezon</button>
                 <button class="filter-btn" onclick="filterArchive('1w', this)">1 Hafta</button>
                 <button class="filter-btn" onclick="filterArchive('1m', this)">1 Ay</button>
                 <button class="filter-btn" onclick="filterArchive('6m', this)">6 Ay</button>
-                <button class="filter-btn" onclick="filterArchive('season', this)">Sezon</button>
+                <button class="filter-btn" onclick="filterArchive('all', this)">Tümü</button>
             </div>
 
             <div class="chart-container" id="chartContainer">
