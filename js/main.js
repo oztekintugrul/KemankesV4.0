@@ -44,4 +44,11 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error("⚠️ switchModule yüklenemedi. Sayfayı yenileyin.");
         }
     }, 200);
+
+    // Service Worker Kaydı (PWA & Offline Kullanım)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('✅ Service Worker kayıt edildi:', reg.scope))
+            .catch(err => console.log('❌ Service Worker hatası:', err));
+    }
 });

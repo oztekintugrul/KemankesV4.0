@@ -369,17 +369,6 @@ export function drawChart(data) {
     scrollWrapper.style.overflowY = 'hidden';
     container.appendChild(scrollWrapper);
 
-    // Tooltip'i body'ye ekleyelim ki taşmasın (Global Tooltip)
-    let tooltip = document.getElementById('chartTooltip');
-    if (!tooltip) {
-        tooltip = document.createElement('div');
-        tooltip.id = 'chartTooltip';
-        tooltip.className = 'chart-tooltip';
-        tooltip.style.zIndex = '9999';
-        document.body.appendChild(tooltip);
-    }
-    tooltip.style.display = 'none';
-    
     if (data.length === 0) { 
         scrollWrapper.innerHTML = '<div style="color:#666; text-align:center; padding-top:80px;">Veri Yok</div>'; 
         return; 
@@ -502,6 +491,47 @@ export function drawChart(data) {
         });
     }
 
+    // --- TÜMÜ GÖRÜNÜMÜ İÇİN YIL ETİKETLERİ (YENİ) ---
+    if (currentArchiveFilter === 'all') {
+        let lastYear = -1;
+        
+        data.forEach((item, index) => {
+            const parts = item.date.split('.');
+            if (parts.length === 3) {
+                const year = parseInt(parts[2]);
+                
+                // Yıl değiştiyse etiket bas
+                if (year !== lastYear) {
+                    const x = startX + (index * pointGap);
+                    
+                    // Dikey Yıl Ayracı
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", x);
+                    line.setAttribute("y1", paddingTop);
+                    line.setAttribute("x2", x);
+                    line.setAttribute("y2", height - paddingBottom);
+                    line.setAttribute("stroke", "#555");
+                    line.setAttribute("stroke-width", "1");
+                    line.setAttribute("stroke-dasharray", "4,4");
+                    svg.appendChild(line);
+
+                    // Yıl İsmi
+                    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    text.setAttribute("x", x);
+                    text.setAttribute("y", height - 10);
+                    text.setAttribute("fill", "#d4af37");
+                    text.setAttribute("font-size", "11px");
+                    text.setAttribute("font-weight", "bold");
+                    text.setAttribute("text-anchor", "middle");
+                    text.textContent = year;
+                    svg.appendChild(text);
+
+                    lastYear = year;
+                }
+            }
+        });
+    }
+
     const dotsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g"); 
     
     data.forEach((item, index) => { 
@@ -539,103 +569,14 @@ export function drawChart(data) {
         hitCircle.setAttribute("opacity", "0");
         hitCircle.style.cursor = "pointer"; 
         
-        const showBubble = (e) => { 
-            e.stopPropagation(); // Tıklamanın container'a geçmesini engelle
-            
-            // Önceki aktif noktayı sıfırla
-            const activeDot = svg.querySelector('.chart-dot.active');
-            if(activeDot) {
-                activeDot.classList.remove('active');
-                activeDot.setAttribute("r", activeDot.getAttribute("data-orig-r"));
-                activeDot.setAttribute("stroke", "#000");
-            }
-            
-            tooltip.innerHTML = `<strong>${item.score} P</strong><br>${item.date}<br><span style='font-size:10px; color:#aaa;'>${item.bowName || ''}</span><br><span style='font-size:9px; color:#d4af37; font-style:italic;'>(Detay için basılı tut)</span>`; 
-            tooltip.style.display = 'block'; 
-            
-            // YENİ POZİSYONLAMA MANTIĞI (Parmağa/Tıklamaya Göre)
-            let clientX, clientY;
-            
-            if (e.changedTouches && e.changedTouches.length > 0) {
-                clientX = e.changedTouches[0].clientX;
-                clientY = e.changedTouches[0].clientY;
-            } else if (e.touches && e.touches.length > 0) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-
-            // Ekran sınırlarını kontrol et (Viewport'a göre)
-            const screenW = window.innerWidth;
-            
-            // Varsayılan: Parmağın sağına ve biraz yukarısına
-            let left = clientX + 20;
-            let top = clientY - 60;
-
-            // Sağa taşıyor mu?
-            if (left + 140 > screenW) {
-                left = clientX - 150; // Sola al
-            }
-            
-            // Yukarı taşıyor mu?
-            if (top < 10) {
-                top = clientY + 20; // Aşağı al
-            }
-
-            tooltip.style.left = left + 'px';
-            tooltip.style.top = top + 'px';
-            tooltip.style.right = 'auto';
-            tooltip.style.transform = 'none';
-            
-            visibleCircle.classList.add('active');
-            visibleCircle.setAttribute("r", dotRadius * 1.5); // Tıklanınca %50 büyüsün
-            visibleCircle.setAttribute("stroke", "#fff"); 
-        }; 
-        
-        // --- LONG PRESS (BASILI TUTMA) MANTIĞI ---
-        let pressTimer;
-        let touchStartX, touchStartY;
-
-        const startPress = (e) => {
-            // e.preventDefault() KALDIRILDI: Kaydırmayı engellememesi için
-            e.stopPropagation(); 
-            
-            if (e.type === 'touchstart') {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-            }
-            
-            pressTimer = setTimeout(() => {
-                openHistoryDetailModal(item); // Detay penceresini aç
-                if (navigator.vibrate) navigator.vibrate(50);
-            }, 400); // Hemen açılması için süre kısaltıldı
+        // --- DOKUNUNCA HEMEN AÇILMA (YENİ) ---
+        const openDetail = (e) => {
+            e.stopPropagation();
+            openHistoryDetailModal(item);
         };
 
-        const movePress = (e) => {
-            if (!pressTimer) return;
-            // Eğer parmak 10px'den fazla kayarsa (scroll yapıyorsa) iptal et
-            if (e.type === 'touchmove') {
-                const x = e.touches[0].clientX;
-                const y = e.touches[0].clientY;
-                if (Math.abs(x - touchStartX) > 10 || Math.abs(y - touchStartY) > 10) {
-                    clearTimeout(pressTimer);
-                    pressTimer = null;
-                }
-            }
-        };
-
-        const cancelPress = () => { clearTimeout(pressTimer); };
-
-        hitCircle.addEventListener('mousedown', startPress);
-        hitCircle.addEventListener('touchstart', startPress, {passive: false});
-        
-        hitCircle.addEventListener('mouseup', cancelPress);
-        hitCircle.addEventListener('mouseleave', cancelPress);
-        hitCircle.addEventListener('touchend', cancelPress);
-        hitCircle.addEventListener('touchmove', movePress, {passive: false}); // Akıllı hareket kontrolü
-        // -----------------------------------------
+        hitCircle.onclick = openDetail;
+        // -------------------------------------
         
         dotsGroup.appendChild(visibleCircle); 
         dotsGroup.appendChild(hitCircle); 
@@ -659,17 +600,6 @@ export function drawChart(data) {
     if (currentArchiveFilter !== 'all' && currentArchiveFilter !== 'season') {
         setTimeout(() => { scrollWrapper.scrollLeft = scrollWrapper.scrollWidth; }, 50); 
     }
-
-    // Boşluğa tıklayınca tooltip'i kapat ve noktayı eski haline getir
-    container.onclick = () => {
-        if(tooltip) tooltip.style.display = 'none';
-        const activeDot = svg.querySelector('.chart-dot.active');
-        if(activeDot) {
-            activeDot.classList.remove('active');
-            activeDot.setAttribute("r", activeDot.getAttribute("data-orig-r"));
-            activeDot.setAttribute("stroke", "#000");
-        }
-    };
 }
 
 let currentArchiveType = '18m'; 
@@ -1870,23 +1800,32 @@ export function openHistoryDetailModal(item) {
 
     let detailsHtml = '';
     if (item.detailedShots && item.detailedShots.length > 0) {
-        detailsHtml += '<h4 style="color:#d4af37; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">Atış Detayları</h4><div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;">';
+        detailsHtml += '<h4 style="color:#d4af37; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">Atış Detayları</h4>';
+        // 18m: 5'li Grid Yapısı
+        detailsHtml += '<div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:5px; justify-content:center;">';
         item.detailedShots.forEach(shot => {
             let color = '#aaa';
             let bg = 'transparent';
             if(shot.score === 3) { color = '#000'; bg = '#d4af37'; }
             else if(shot.score === 1) { color = '#000'; bg = '#e0e0e0'; }
             
-            detailsHtml += `<div style="border:1px solid #555; padding:5px; border-radius:4px; min-width:35px; text-align:center;">
+            detailsHtml += `<div style="border:1px solid #555; padding:5px; border-radius:4px; text-align:center;">
                 <div style="font-size:10px; color:#888; margin-bottom:2px;">${shot.label}</div>
                 <div style="font-weight:bold; color:${color}; background:${bg}; border-radius:3px; padding:2px;">${shot.score}</div>
             </div>`;
         });
         detailsHtml += '</div>';
     } else if (item.hitLabels && item.hitLabels.length > 0) {
-        detailsHtml += '<h4 style="color:#d4af37; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">İsabet Eden Oklar</h4><div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;">';
-        item.hitLabels.forEach(label => {
-            detailsHtml += `<span style="background:#d4af37; color:#000; padding:4px 8px; border-radius:4px; font-size:13px; font-weight:bold;">${label}</span>`;
+        detailsHtml += '<h4 style="color:#d4af37; margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:5px;">İsabet Eden Oklar</h4>';
+        
+        // 70m: Gruplandırma ve Sıralama
+        const counts = {};
+        item.hitLabels.forEach(l => counts[l] = (counts[l] || 0) + 1);
+        const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]); // Çoktan aza sırala
+
+        detailsHtml += '<div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;">';
+        sorted.forEach(([label, count]) => {
+            detailsHtml += `<span style="background:#d4af37; color:#000; padding:4px 8px; border-radius:4px; font-size:13px; font-weight:bold;">${label} <span style="font-size:10px; opacity:0.7;">(x${count})</span></span>`;
         });
         detailsHtml += '</div>';
     }

@@ -8,7 +8,8 @@ export function saveActiveSession() {
         activeModuleId: state.activeModuleId,
         targetSessionData: state.targetSessionData,
         currentTargetRound: state.currentTargetRound,
-        currentTargetFace: state.currentTargetFace
+        currentTargetFace: state.currentTargetFace,
+        moduleBowSlots: state.moduleBowSlots
     };
     try {
         localStorage.setItem('kemankes_activeState', JSON.stringify(stateToSave));
@@ -27,6 +28,11 @@ export function loadActiveSession() {
             if(parsed.targetSessionData) state.targetSessionData = parsed.targetSessionData;
             if(parsed.currentTargetRound) state.currentTargetRound = parsed.currentTargetRound;
             if(parsed.currentTargetFace) state.currentTargetFace = parsed.currentTargetFace;
+            if(parsed.moduleBowSlots) state.moduleBowSlots = parsed.moduleBowSlots;
+
+            if (state.moduleBowSlots && state.moduleBowSlots[state.activeModuleId] !== undefined) {
+                state.currentBowSlot = state.moduleBowSlots[state.activeModuleId];
+            }
         }
     } catch (e) { console.error("Oturum yüklenirken hata:", e); }
 }
@@ -35,6 +41,8 @@ export function loadActiveSession() {
 export function exportData() {
     const data = {};
     // LocalStorage'daki tüm kemankes verilerini topla
+    // Not: LocalStorage'daki veriler (Notlar, Driller vb.) zaten sıralı diziler (Array) olarak saklanır.
+    // Bu yüzden export ederken sıralama korunur.
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key.startsWith('kemankes')) {

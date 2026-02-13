@@ -56,6 +56,11 @@ function initGameModule(moduleId) {
 
 export function switchModule(moduleId) {
     state.activeModuleId = moduleId;
+    
+    // Modüle özel yay seçimini geri yükle
+    if (!state.moduleBowSlots) state.moduleBowSlots = {};
+    state.currentBowSlot = state.moduleBowSlots[moduleId] || 0;
+
     saveActiveSession();
     
     // UI Reset
@@ -339,7 +344,34 @@ export function resetArrowStats(label, moduleType) {
 }
 
 export function clearArrowAnalysis() { if(confirm("Seçili yayın tüm istatistikleri silinsin mi?")) { localStorage.removeItem(`kemankesGlobalStats_${state.activeModuleId}_${state.currentBowSlot}`); UI.renderArrowAnalysis(state.activeModuleId); } }
-export function switchBowSlot(slotIndex) { state.currentBowSlot = slotIndex; for(let i=0; i<3; i++) { const btn = document.getElementById(`bowSlot${i}`); if (i === slotIndex) { btn.classList.add('selected'); btn.style.backgroundColor = '#d4af37'; btn.style.color = '#000'; } else { btn.classList.remove('selected'); btn.style.backgroundColor = '#333'; btn.style.color = '#fff'; } } const allSettings = JSON.parse(localStorage.getItem('kemankesBowSettings')) || {}; const moduleSettings = allSettings[state.activeModuleId] || [{}, {}, {}]; const slotData = moduleSettings[slotIndex] || {}; document.getElementById('bowName').value = slotData.name || ''; document.getElementById('bowBrace').value = slotData.brace || ''; document.getElementById('bowNock').value = slotData.nock || ''; document.getElementById('bowFinger').value = slotData.finger || ''; }
+export function switchBowSlot(slotIndex) { 
+    state.currentBowSlot = slotIndex; 
+    
+    // Modüle özel slotu kaydet
+    if (!state.moduleBowSlots) state.moduleBowSlots = {};
+    state.moduleBowSlots[state.activeModuleId] = slotIndex;
+
+    for(let i=0; i<3; i++) { 
+        const btn = document.getElementById(`bowSlot${i}`); 
+        if (i === slotIndex) { 
+            btn.classList.add('selected'); 
+            btn.style.backgroundColor = '#d4af37'; 
+            btn.style.color = '#000'; 
+        } else { 
+            btn.classList.remove('selected'); 
+            btn.style.backgroundColor = '#333'; 
+            btn.style.color = '#fff'; 
+        } 
+    } 
+    const allSettings = JSON.parse(localStorage.getItem('kemankesBowSettings')) || {}; 
+    const moduleSettings = allSettings[state.activeModuleId] || [{}, {}, {}]; 
+    const slotData = moduleSettings[slotIndex] || {}; 
+    
+    const elName = document.getElementById('bowName'); if(elName) elName.value = slotData.name || ''; 
+    const elBrace = document.getElementById('bowBrace'); if(elBrace) elBrace.value = slotData.brace || ''; 
+    const elNock = document.getElementById('bowNock'); if(elNock) elNock.value = slotData.nock || ''; 
+    const elFinger = document.getElementById('bowFinger'); if(elFinger) elFinger.value = slotData.finger || ''; 
+}
 export function saveBowSettings() { const allSettings = JSON.parse(localStorage.getItem('kemankesBowSettings')) || {}; if (!allSettings[state.activeModuleId]) allSettings[state.activeModuleId] = [{}, {}, {}]; const newData = { name: document.getElementById('bowName').value, brace: document.getElementById('bowBrace').value, nock: document.getElementById('bowNock').value, finger: document.getElementById('bowFinger').value }; allSettings[state.activeModuleId][state.currentBowSlot] = newData; localStorage.setItem('kemankesBowSettings', JSON.stringify(allSettings)); const btn = document.querySelector('#bowFormContent .btn-add-note'); const originalText = btn.innerText; btn.innerText = "✅ Kaydedildi"; btn.style.backgroundColor = "#4caf50"; setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "#d4af37"; }, 1500); }
 
 // NOTLAR (FIXED - LOGIC İÇİNDE YÖNETİM)
@@ -671,7 +703,6 @@ window.openDrillModal = openDrillModal;
 window.saveDrill = saveDrill;
 window.deleteDrill = deleteDrill;
 window.pickRandomDrill = pickRandomDrill;
-window.startCompass = window.startCompass; // Weather.js'den gelecek
 
 // Drag & Drop Handlers for Notes (Global)
 window.handleDragStartDesktop = function(e) { this.dataset.dragSrcIndex = this.dataset.index; this.style.opacity = '0.4'; e.dataTransfer.effectAllowed = 'move'; };

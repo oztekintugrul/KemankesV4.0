@@ -15,6 +15,7 @@ export const targetConfigs = {
 export const state = {
     activeModuleId: '18m',
     currentBowSlot: 0,
+    moduleBowSlots: { '18m': 0, '70m': 0 },
     sessions: {
         '18m': createSessionState(7),
         '70m': createSessionState(12)
