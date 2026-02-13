@@ -855,7 +855,19 @@ export function renderArrowAnalysis(type, btnElement, sortMode = 'accuracy') {
 
     // Sıralama
     activeArrows.sort((a, b) => {
-        if(sortMode === 'accuracy') { return b.pct - a.pct; } 
+        if(sortMode === 'accuracy') { 
+            // 1. Kriter: Yüzde (Büyükten küçüğe)
+            if (Math.abs(b.pct - a.pct) > 0.01) return b.pct - a.pct;
+            
+            // 2. Kriter: Yüzdeler eşitse (Örn: İkisi de %100 ise)
+            if (currentAnalysisType === '18m') {
+                // Daha çok "Kafa" vuran (daha tecrübeli ok) öne geçer
+                if (b.headShots !== a.headShots) return b.headShots - a.headShots;
+                // O da eşitse toplam puana bak
+                return b.totalScore - a.totalScore;
+            }
+            return b.hits - a.hits; // 70m için isabet sayısı
+        } 
         else { return parseInt(a.label.replace(/^\D+/g, '')) - parseInt(b.label.replace(/^\D+/g, '')); }
     });
 
@@ -888,10 +900,11 @@ export function renderArrowAnalysis(type, btnElement, sortMode = 'accuracy') {
             tr.style.borderBottom = '1px solid #333';
             const hs = type === '18m' ? item.headShots : '-';
             const misses = item.shots - item.hits;
+            const displayHits = type === '18m' ? (item.hits - item.headShots) : item.hits;
             tr.innerHTML = `
                 <td style="padding:8px 0; font-weight:bold;">${item.label}</td>
                 <td>${hs}</td>
-                <td>${item.hits}</td>
+                <td>${displayHits}</td>
                 <td>${misses}</td>
                 <td style="color:${item.pct > 75 ? '#4caf50' : 'var(--text-color)'}">%${Math.round(item.pct)}</td>
                 <td>${item.sessions}</td>
